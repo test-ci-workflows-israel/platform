@@ -18,7 +18,7 @@ jobs:
 
       - name: 'Echo version'
         env:
-          $prod_version: 1.0.0
+          prod_version: '1.0.0'
         run: |
           if [ "$prod_version" == "${{ steps.webapp_release.outputs.release }}" ]; then
             echo "The latest version of the webapp is already deployed in production"
@@ -39,7 +39,7 @@ jobs:
 
       - name: 'Echo version'
         env:
-          $prod_version: 0.0.0
+          prod_version: '0.0.0'
         run: |
           if [ "$prod_version" == "${{ steps.front_release.outputs.release }}" ]; then
             echo "The latest version of the webapp is already deployed in production"
@@ -61,7 +61,7 @@ jobs:
 
       - name: 'Echo version'
         env:
-          $prod_version: 1.0.3
+          prod_version: '1.0.3'
         run: |
           if [ "$prod_version" == "${{ steps.back_release.outputs.release }}" ]; then
             echo "The latest version of the webapp is already deployed in production"
