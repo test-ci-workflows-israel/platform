@@ -1,0 +1,23 @@
+name: Deployment train production
+
+on: 'workflow_dispatch'
+
+jobs:
+  check_version_app:
+    name: Check version app
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: 'Obtener última release de app_front'
+        id: webapp_release
+        uses: rez0n/actions-github-release@v2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: test-ci-workflows-israel/app
+          type: stable
+
+      - name: 'Echo version'
+        run: |
+          echo "Version: ${{ steps.webapp_release.outputs.release }}"
+          echo $webapp_release
