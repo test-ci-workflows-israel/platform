@@ -70,27 +70,15 @@ jobs:
 
   deploy_app:
     name: Deploy app
-    runs-on: ubuntu-latest
     needs: check_version_app
-
-    steps:
-      - name: 'Deploy app'
-        uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
+    uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
 
   deploy_front:
     name: Deploy front
-    runs-on: ubuntu-latest
     needs: check_version_front
-
-    steps:
-      - name: 'Deploy front'
-        uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
+    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
 
   deploy_back:
     name: Deploy back
-    runs-on: ubuntu-latest
     needs: check_version_back
-
-    steps:
-      - name: 'Deploy back'
-        uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
+    uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
