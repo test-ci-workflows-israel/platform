@@ -9,15 +9,61 @@ jobs:
     continue-on-error: true
 
     steps:
-      - name: 'Obtener última release de app_front'
+      - name: 'Obtener última release de app'
         id: webapp_release
-        uses: rez0n/actions-github-release@v2.0
+        uses: pozetroninc/github-action-get-latest-release@v0.8.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           repository: test-ci-workflows-israel/app
-          type: stable
+          excludes: 'prerelease, draft'
 
       - name: 'Echo version'
+        env:
+          $prod_version: 1.0.0
         run: |
-          echo "Version: ${{ steps.webapp_release.outputs.release }}"
-          echo $webapp_release
+          if [ "$prod_version" == "${{ steps.webapp_release.outputs.release }}" ]; then
+            echo "The latest version of the webapp is already deployed in production"
+            exit 1
+          fi
+  check_version_front:
+    name: Check version front
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: 'Obtener última release de front'
+        id: front_release
+        uses: pozetroninc/github-action-get-latest-release@v0.8.0
+        with:
+          repository: test-ci-workflows-israel/front
+          excludes: 'prerelease, draft'
+
+      - name: 'Echo version'
+        env:
+          $prod_version: 0.0.0
+        run: |
+          if [ "$prod_version" == "${{ steps.front_release.outputs.release }}" ]; then
+            echo "The latest version of the webapp is already deployed in production"
+            exit 1
+          fi
+
+  check_version_back:
+    name: Check version back
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: 'Obtener última release de back'
+        id: back_release
+        uses: pozetroninc/github-action-get-latest-release@v0.8.0
+        with:
+          repository: test-ci-workflows-israel/back
+          excludes: 'prerelease, draft'
+
+      - name: 'Echo version'
+        env:
+          $prod_version: 1.0.3
+        run: |
+          if [ "$prod_version" == "${{ steps.back_release.outputs.release }}" ]; then
+            echo "The latest version of the webapp is already deployed in production"
+            exit 1
+          fi
