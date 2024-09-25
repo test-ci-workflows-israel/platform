@@ -22,7 +22,7 @@ jobs:
       - name: 'Echo version'
         id: set_output
         env:
-          prod_version: '1.0.3'
+          prod_version: '1.0.5'
         run: |
           if [ "$prod_version" == "${{ steps.back_release.outputs.release }}" ]; then
             echo "deploy=false" >> "$GITHUB_OUTPUT"
