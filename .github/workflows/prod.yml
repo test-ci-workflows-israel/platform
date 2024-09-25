@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     if: always()
+    outputs:
+      deploy: true
 
     steps:
       - name: 'Obtener última release de back'
@@ -22,14 +24,16 @@ jobs:
           prod_version: '1.0.3'
         run: |
           if [ "$prod_version" == "${{ steps.back_release.outputs.release }}" ]; then
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
             echo "::notice title=No va a desplegarse back::La última versión del backend ya está desplegada en producción"
-            exit 1
           fi
 
   check_version_front:
     name: Check version front
     runs-on: ubuntu-latest
     if: always()
+    outputs:
+      deploy: true
 
     steps:
       - name: 'Obtener última release de front'
@@ -44,8 +48,8 @@ jobs:
           prod_version: '0.0.0'
         run: |
           if [ "$prod_version" == "${{ steps.front_release.outputs.release }}" ]; then
+            echo echo "deploy=false" >> "$GITHUB_OUTPUT"
             echo "::notice title=No va a desplegarse Front::La última versión de Front ya está desplegada en producción"
-            exit 1
           fi
 
   check_version_app:
@@ -53,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     outputs:
-      new_version: ${{ steps.webapp_release.outputs.release }}
+      deploy: true
 
     steps:
       - name: 'Obtener última release de app'
@@ -69,20 +73,24 @@ jobs:
           prod_version: '1.0.0'
         run: |
           if [ "$prod_version" == "${{ steps.webapp_release.outputs.release }}" ]; then
+            echo echo "deploy=false" >> "$GITHUB_OUTPUT"
             echo "::notice title=No va a desplegarse App::La última versión de la app ya está desplegada en producción"
           fi
-
-  deploy_app:
-    name: Deploy app
-    needs: [check_version_app, deploy_front, deploy_back]
-    uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
-
-  deploy_front:
-    name: Deploy front
-    needs: [check_version_front, deploy_back]
-    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
 
   deploy_back:
     name: Deploy back
     needs: check_version_back
+    if: needs.check_version_back.outputs.deploy == true
     uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
+
+  deploy_front:
+    name: Deploy front
+    needs: [check_version_front, deploy_back]
+    if: needs.check_version_front.outputs.deploy == true
+    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
+
+  deploy_app:
+    name: Deploy app
+    needs: [check_version_app, deploy_front, deploy_back]
+    if: needs.check_version_app.outputs.deploy == true
+    uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
