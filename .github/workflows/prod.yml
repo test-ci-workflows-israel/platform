@@ -88,17 +88,17 @@ jobs:
   deploy_back:
     name: Deploy back
     needs: check_version_back
-    if: needs.check_version_back.outputs.deploy == true
+    if: ${{ needs.check_version_back.outputs.deploy == 'true' }}
     uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
 
   deploy_front:
     name: Deploy front
     needs: [check_version_front, deploy_back]
-    if: needs.check_version_front.outputs.deploy == true
+    if: ${{ needs.check_version_front.outputs.deploy == 'true' }}
     uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
 
   deploy_app:
     name: Deploy app
     needs: [check_version_app, deploy_front, deploy_back]
-    if: needs.check_version_app.outputs.deploy == true
+    if: ${{ needs.check_version_app.outputs.deploy == 'true' }}
     uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
