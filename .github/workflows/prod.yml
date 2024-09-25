@@ -85,17 +85,6 @@ jobs:
             echo "deploy=true" >> "$GITHUB_OUTPUT"
           fi
 
-  echo_deploy:
-    runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
-    needs: [check_version_back, check_version_front, check_version_app]
-    steps:
-      - name: 'Echo deploy'
-        run: |
-          echo "back: " ${{ needs.check_version_back.outputs.deploy }}
-          echo "front: " ${{ needs.check_version_front.outputs.deploy }}
-          echo "app: " ${{ needs.check_version_app.outputs.deploy }}
-
   deploy_back:
     name: Deploy back
     needs: check_version_back
