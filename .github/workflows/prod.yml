@@ -3,30 +3,29 @@ name: Deployment train production
 on: 'workflow_dispatch'
 
 jobs:
-  check_version_app:
-    name: Check version app
+  check_version_back:
+    name: Check version back
     runs-on: ubuntu-latest
+    continue-on-error: true
     if: always()
-    outputs:
-      new_version: ${{ steps.webapp_release.outputs.release }}
 
     steps:
-      - name: 'Obtener última release de app'
-        id: webapp_release
+      - name: 'Obtener última release de back'
+        id: back_release
         uses: pozetroninc/github-action-get-latest-release@v0.8.0
         with:
-          repository: test-ci-workflows-israel/app
+          repository: test-ci-workflows-israel/back
           excludes: 'prerelease, draft'
 
       - name: 'Echo version'
-        id: echo_version
         env:
-          prod_version: '1.0.0'
+          prod_version: '1.0.3'
         run: |
-          if [ "$prod_version" == "${{ steps.webapp_release.outputs.release }}" ]; then
-            echo "::notice title=No va a desplegarse App::La última versión de la app ya está desplegada en producción"
+          if [ "$prod_version" == "${{ steps.back_release.outputs.release }}" ]; then
+            echo "::notice title=No va a desplegarse back::La última versión del backend ya está desplegada en producción"
             exit 1
           fi
+
   check_version_front:
     name: Check version front
     runs-on: ubuntu-latest
@@ -49,27 +48,28 @@ jobs:
             exit 1
           fi
 
-  check_version_back:
-    name: Check version back
+  check_version_app:
+    name: Check version app
     runs-on: ubuntu-latest
-    continue-on-error: true
     if: always()
+    outputs:
+      new_version: ${{ steps.webapp_release.outputs.release }}
 
     steps:
-      - name: 'Obtener última release de back'
-        id: back_release
+      - name: 'Obtener última release de app'
+        id: webapp_release
         uses: pozetroninc/github-action-get-latest-release@v0.8.0
         with:
-          repository: test-ci-workflows-israel/back
+          repository: test-ci-workflows-israel/app
           excludes: 'prerelease, draft'
 
       - name: 'Echo version'
+        id: echo_version
         env:
-          prod_version: '1.0.3'
+          prod_version: '1.0.0'
         run: |
-          if [ "$prod_version" == "${{ steps.back_release.outputs.release }}" ]; then
-            echo "::notice title=No va a desplegarse back::La última versión del backend ya está desplegada en producción"
-            exit 1
+          if [ "$prod_version" == "${{ steps.webapp_release.outputs.release }}" ]; then
+            echo "::notice title=No va a desplegarse App::La última versión de la app ya está desplegada en producción"
           fi
 
   deploy_app:
