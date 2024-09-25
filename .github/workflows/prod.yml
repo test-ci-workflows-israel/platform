@@ -71,17 +71,17 @@ jobs:
   deploy_app:
     name: Deploy app
     needs: check_version_app
-    if: ${{ needs.check_version_app.result != 'failure' }}
+    if: needs.check_version_app.result != 'failure'
     uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
 
   deploy_front:
     name: Deploy front
     needs: check_version_front
-    if: ${{ needs.check_version_front.result != 'failure' }}
+    if: needs.check_version_front.result != 'failure'
     uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
 
   deploy_back:
     name: Deploy back
     needs: check_version_back
-    if: ${{ needs.check_version_back.result != 'failure' }}
+    if: needs.check_version_back.result != 'failure'
     uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
