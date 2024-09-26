@@ -22,7 +22,7 @@ jobs:
       - name: 'Echo version'
         id: set_output
         env:
-          prod_version: '1.0.5'
+          prod_version: '1.0.3'
         run: |
           if [ "$prod_version" == "${{ steps.back_release.outputs.release }}" ]; then
             echo "deploy=false" >> "$GITHUB_OUTPUT"
@@ -210,13 +210,13 @@ jobs:
       - run: echo "Rollback front"
 
   deploy_back_rollback:
-    name: Rollback app
+    name: 'Deploy back: rollback'
     needs: rollback_back
     if: ${{ needs.rollback_back.result == 'failure' && !cancelled() }}
     uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
 
   deploy_front_rollback:
-    name: Rollback app
+    name: 'Deploy front: rollback'
     needs: rollback_front
     if: ${{ needs.rollback_front.result == 'failure' && !cancelled() }}
     uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
