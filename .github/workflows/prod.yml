@@ -94,11 +94,130 @@ jobs:
   deploy_front:
     name: Deploy front
     needs: [check_version_front, deploy_back]
-    if: ${{ needs.check_version_front.outputs.deploy == 'true' && !cancelled() }}
+    if: ${{ needs.check_version_front.outputs.deploy == 'true' && needs.deploy_back.result != 'failure' && !cancelled() }}
     uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
 
   deploy_app:
     name: Deploy app
     needs: [check_version_app, deploy_front, deploy_back]
-    if: ${{ needs.check_version_app.outputs.deploy == 'true' && !cancelled() }}
+    if: ${{ needs.check_version_app.outputs.deploy == 'true' && needs.deploy_back.result != 'failure' && needs.deploy_front.result != 'failure' && !cancelled() }}
     uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
+
+  deploy_back_retry1:
+    name: 'Deploy back: retry 1'
+    needs: deploy_back
+    if: ${{ needs.deploy_back.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
+
+  deploy_front_retry1:
+    name: 'Deploy front: retry 1'
+    needs: deploy_front
+    if: ${{ needs.deploy_front.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
+
+  deploy_app_retry1:
+    name: 'Deploy app: retry 1'
+    needs: deploy_app
+    if: ${{ needs.deploy_app.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
+
+  deploy_back_retry2:
+    name: 'Deploy back: retry 2'
+    needs: deploy_back_retry1
+    if: ${{ needs.deploy_back_retry1.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
+
+  deploy_front_retry2:
+    name: 'Deploy front: retry 2'
+    needs: deploy_front_retry1
+    if: ${{ needs.deploy_front_retry1.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
+
+  deploy_app_retry2:
+    name: 'Deploy app: retry 2'
+    needs: deploy_app_retry1
+    if: ${{ needs.deploy_app_retry1.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
+
+  deploy_back_retry3:
+    name: 'Deploy back: retry 3'
+    needs: deploy_back_retry2
+    if: ${{ needs.deploy_back_retry2.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
+
+  deploy_front_retry3:
+    name: 'Deploy front: retry 3'
+    needs: deploy_front_retry2
+    if: ${{ needs.deploy_front_retry2.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
+
+  deploy_app_retry3:
+    name: 'Deploy app: retry 3'
+    needs: deploy_app_retry2
+    if: ${{ needs.deploy_app_retry2.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
+
+  deploy_back_retry4:
+    name: 'Deploy back: retry 4'
+    needs: deploy_back_retry3
+    if: ${{ needs.deploy_back_retry3.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
+
+  deploy_front_retry4:
+    name: 'Deploy front: retry 4'
+    needs: deploy_front_retry3
+    if: ${{ needs.deploy_front_retry3.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
+
+  deploy_app_retry4:
+    name: 'Deploy app: retry 4'
+    needs: deploy_app_retry3
+    if: ${{ needs.deploy_app_retry3.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
+
+  deploy_back_retry5:
+    name: 'Deploy back: retry 5'
+    needs: deploy_back_retry4
+    if: ${{ needs.deploy_back_retry4.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
+
+  deploy_front_retry5:
+    name: 'Deploy front: retry 5'
+    needs: deploy_front_retry4
+    if: ${{ needs.deploy_front_retry4.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
+
+  deploy_app_retry5:
+    name: 'Deploy app: retry 5'
+    needs: deploy_app_retry4
+    if: ${{ needs.deploy_app_retry4.result == 'failed' && !cancelled() }}
+    uses: test-ci-workflows-israel/app/.github/workflows/prod.yml@main
+
+  rollback_back:
+    name: Rollback back
+    needs: deploy_back_retry5
+    if: ${{ needs.deploy_back_retry5.result == 'failure' && !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Rollback back"
+
+  rollback_front:
+    name: Rollback front
+    needs: deploy_front_retry5
+    if: ${{ needs.deploy_front_retry5.result == 'failure' && !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Rollback front"
+
+  deploy_back_rollback:
+    name: Rollback app
+    needs: rollback_back
+    if: ${{ needs.rollback_back.result == 'failure' && !cancelled() }}
+    uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
+
+  deploy_front_rollback:
+    name: Rollback app
+    needs: rollback_front
+    if: ${{ needs.rollback_front.result == 'failure' && !cancelled() }}
+    uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
+## https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-composite-action
