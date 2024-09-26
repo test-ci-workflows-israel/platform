@@ -212,12 +212,12 @@ jobs:
   deploy_back_rollback:
     name: 'Deploy back: rollback'
     needs: rollback_back
-    if: ${{ needs.rollback_back.result == 'failure' && !cancelled() }}
+    if: ${{ needs.rollback_back.result == 'success' && !cancelled() }}
     uses: test-ci-workflows-israel/back/.github/workflows/prod.yml@main
 
   deploy_front_rollback:
     name: 'Deploy front: rollback'
     needs: rollback_front
-    if: ${{ needs.rollback_front.result == 'failure' && !cancelled() }}
+    if: ${{ needs.rollback_front.result == 'success' && !cancelled() }}
     uses: test-ci-workflows-israel/front/.github/workflows/prod.yml@main
 ## https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-composite-action
