@@ -1,0 +1,42 @@
+on:
+  workflow_call:
+    inputs:
+      url_to_check:
+        type: string
+        required: true
+      repository:
+        type: string
+        required: true
+      name:
+        type: string
+        required: true
+    outputs:
+      deploy:
+        value: ${{ jobs.check_version.outputs.deploy }}
+
+jobs:
+  check_version:
+    name: Check version
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.set_output.outputs.deploy }}
+
+    steps:
+      - name: 'Obtener última release'
+        id: release
+        uses: pozetroninc/github-action-get-latest-release@v0.8.0
+        with:
+          repository: ${{ github.event.inputs.repository }}
+          excludes: 'prerelease, draft'
+
+      - name: 'Echo version'
+        id: set_output
+        env:
+          prod_version: '1.0.3'
+        run: |
+          if [ "$prod_version" == "${{ steps.release.outputs.release }}" ]; then
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=No va a desplegarse back::La última versión del backend ya está desplegada en producción"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
