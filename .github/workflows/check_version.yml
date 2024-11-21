@@ -41,6 +41,8 @@ jobs:
         env:
           prod_version: '1.0.2'
         run: |
+          echo $prod_version
+          echo ${{ steps.release.outputs.result }}
           if [ $prod_version == ${{ steps.release.outputs.result }} ]; then
             echo "deploy=false" >> "$GITHUB_OUTPUT"
             echo "::notice title=No va a desplegarse back::La última versión del backend ya está desplegada en producción"
