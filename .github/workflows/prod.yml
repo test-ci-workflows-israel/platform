@@ -10,7 +10,7 @@ jobs:
     with:
       url_to_check: ''
       name: 'back'
-      repository: test-ci-workflows-israel/back
+      repository: back
 
   check_version_front:
     name: Check version front
@@ -19,7 +19,7 @@ jobs:
     with:
       url_to_check: ''
       name: 'front'
-      repository: test-ci-workflows-israel/front
+      repository: front
 
   check_version_app:
     name: Check version app
@@ -28,7 +28,7 @@ jobs:
     with:
       url_to_check: ''
       name: 'app'
-      repository: test-ci-workflows-israel/app
+      repository: app
 
   deploy_back:
     name: Deploy back

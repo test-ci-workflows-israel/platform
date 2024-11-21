@@ -23,19 +23,25 @@ jobs:
       deploy: ${{ steps.set_output.outputs.deploy }}
 
     steps:
-      - name: 'Obtener última release'
+      - name: 'Obtener última release del repo'
         id: release
-        uses: pozetroninc/github-action-get-latest-release@v0.8.0
+        uses: actions/github-script@v7
         with:
-          repository: ${{ github.event.inputs.repository }}
-          excludes: 'prerelease, draft'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: releases } = await github.repos.listReleases({
+              owner: context.repo.owner,
+              repo: ${{ inputs.repository }},
+              per_page: 1,
+            });
+            return releases[0].tag_name;
 
       - name: 'Echo version'
         id: set_output
         env:
           prod_version: '1.0.3'
         run: |
-          if [ "$prod_version" == "${{ steps.release.outputs.release }}" ]; then
+          if [ "$prod_version" == "${{ steps.release.outputs.result }}" ]; then
             echo "deploy=false" >> "$GITHUB_OUTPUT"
             echo "::notice title=No va a desplegarse back::La última versión del backend ya está desplegada en producción"
           else
