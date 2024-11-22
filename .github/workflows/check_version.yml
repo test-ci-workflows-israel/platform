@@ -39,7 +39,7 @@ jobs:
       - name: 'Echo version'
         id: set_output
         env:
-          prod_version: '1.0.2'
+          prod_version: '1.0.0'
         run: |
           echo $prod_version
           echo ${{ steps.release.outputs.result }}
@@ -48,4 +48,5 @@ jobs:
             echo "::notice title=No va a desplegarse back::La última versión del backend ya está desplegada en producción"
           else
             echo "deploy=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=true"
           fi
