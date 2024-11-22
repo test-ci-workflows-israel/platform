@@ -48,5 +48,4 @@ jobs:
             echo "::notice title=No va a desplegarse ${{inputs.name}}::La última versión ya está desplegada en producción"
           else
             echo "deploy=true" >> "$GITHUB_OUTPUT"
-            echo "::notice title=Se va a desplegar ${{inputs.name}}::La última versión no está desplegada en producción"
           fi
