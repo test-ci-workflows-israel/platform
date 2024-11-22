@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      deploy: ${{ steps.set_output.outputs.result }}
+      deploy: ${{ steps.set_output.outputs.deploy }}
 
     steps:
       - name: 'Obtener última release del repo'
