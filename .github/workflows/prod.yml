@@ -30,6 +30,14 @@ jobs:
       name: 'app'
       repository: app
 
+  echo_check_version:
+    name: Check version front
+    runs-on: ubuntu-latest
+    needs: check_version_app
+    if: ${{ !cancelled()}}
+    steps:
+      - run: echo ${{needs.check_version_app.outputs.deploy}}
+
   deploy_back:
     name: Deploy back
     needs: check_version_back
