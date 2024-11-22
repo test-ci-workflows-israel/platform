@@ -45,7 +45,7 @@ jobs:
           echo ${{ steps.release.outputs.result }}
           if [ "$prod_version" == "${{ steps.release.outputs.result }}" ]; then
             echo "deploy=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=No va a desplegarse back::La última versión del backend ya está desplegada en producción"
+            echo "::notice title=No va a desplegarse ${{inputs.name}}::La última versión ya está desplegada en producción"
           else
             echo "deploy=true" >> "$GITHUB_OUTPUT"
             echo "::notice title=true"
