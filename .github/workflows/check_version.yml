@@ -13,6 +13,8 @@ on:
     outputs:
       deploy:
         value: ${{ jobs.check_version.outputs.deploy }}
+      release:
+        value: ${{ jobs.check_version.outputs.release }}
 
 jobs:
   check_version:
@@ -21,6 +23,7 @@ jobs:
     continue-on-error: true
     outputs:
       deploy: ${{ steps.set_output.outputs.deploy }}
+      release: ${{ steps.release.outputs.result }}
 
     steps:
       - name: 'Obtener última release del repo'
@@ -45,6 +48,7 @@ jobs:
           echo ${{ steps.release.outputs.result }}
           if [ "$prod_version" == "${{ steps.release.outputs.result }}" ]; then
             echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "release=${{ steps.release.outputs.result }}" >> "$GITHUB_OUTPUT"
             echo "::notice title=No va a desplegarse ${{inputs.name}}::La última versión ya está desplegada en producción"
           else
             echo "deploy=true" >> "$GITHUB_OUTPUT"
