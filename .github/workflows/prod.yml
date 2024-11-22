@@ -35,7 +35,9 @@ jobs:
     needs: check_version_app
     if: ${{ !cancelled()}}
     steps:
-      - run: echo ${{needs.check_version_app.outputs.deploy}}
+      - run: |
+          echo ${{needs.check_version_app.outputs.deploy}}
+          echo ${{needs.check_version_app.outputs.release}}
 
   deploy_back:
     name: Deploy back
